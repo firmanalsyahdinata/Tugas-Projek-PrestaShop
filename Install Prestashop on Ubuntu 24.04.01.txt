@@ -93,6 +93,8 @@ sudo apachectl configtest
 
 sudo systemctl restart apache2
 
+ifconfig
+
 
 Securing Prestashop with SSL
 
