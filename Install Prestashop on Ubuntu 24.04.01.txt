@@ -1,0 +1,106 @@
+sudo apt update && sudo apt upgrade -y
+
+sudo apt install apache2 mariadb-server composer git php php-curl php-xmlrpc php-soap php-intl php-zip php-cli php-mysql php-common php-opcache php-memcached php-bcmath php-gd php-mbstring php-xml php-gmp php-imagick -y
+
+sudo systemctl is-enabled apache2
+
+sudo systemctl status apache2
+
+sudo systemctl is-enabled mariadb
+
+sudo systemctl status mariadb
+
+php -v
+
+sudo -u www-data composer --version
+
+sudo nano /etc/php/8.3/apache2/php.ini
+
+date.timezone = Europe/Malta
+max_execution_time = 130
+memory_limit = 256M
+allow_url_fopen = On
+allow_url_include = Off
+post_max_size = 128M
+upload_max_filesize = 128M
+max_input_vars = 5000
+
+sudo systemctl restart apache2
+
+sudo mariadb-secure-installation
+
+sudo mariadb -u root -p
+
+CREATE DATABASE prestashop_db;
+
+CREATE USER prestashop@localhost IDENTIFIED BY 'prestashop';
+
+GRANT ALL PRIVILEGES on prestashop_db.* TO prestashop@localhost;
+
+FLUSH PRIVILEGES;
+
+SHOW GRANTS FOR prestashop@localhost;
+
+Exit;
+
+cd /var/www/html
+
+wget https://github.com/PrestaShop/php-ps-info/archive/refs/tags/v1.1.tar.gz
+
+tar -xf v1.1.tar.gz
+
+mv php-ps-info-1.1 ps-check
+
+mkdir -p /var/www/prestashop
+
+cd /var/www/prestashop 
+
+wget https://github.com/PrestaShop/PrestaShop/releases/download/8.2.0/prestashop_8.2.0.zip
+
+unzip prestashop_8.2.0.zip
+
+sudo chown -R www-data:www-data /var/www/prestashop
+
+sudo chmod u+rw /var/www/prestashop
+
+sudo a2enmod rewrite headers ssl
+
+sudo nano /etc/apache2/sites-available/prestashop.conf
+
+
+<VirtualHost *:80>
+    ServerName your domain or IP
+    ServerAdmin example@email.com
+    DocumentRoot /var/www/prestashop
+
+    <Directory /var/www/prestashop>
+        # enable the .htaccess rewrites
+        AllowOverride All
+        Options +Indexes
+        Require all granted
+
+        # Disable back office token
+        # SetEnv _TOKEN_ disabled
+    </Directory>
+
+     ErrorLog /var/log/apache2/prestashop_error.log
+     CustomLog /var/log/apache2/prestashop_access.log combined
+</VirtualHost>
+
+sudo a2ensite prestashop.conf
+
+sudo apachectl configtest
+
+sudo systemctl restart apache2
+
+
+Securing Prestashop with SSL
+
+sudo apt install certbot python3-certbot-apache
+
+sudo certbot --apache --agree-tos --no-eff-email --redirect --hsts --staple-ocsp --email example@email.com -d your domain
+
+
+Before accessing the Prestashop admin page:
+
+sudo rm -rf /var/www/prestashop/install
