@@ -106,3 +106,5 @@ sudo certbot --apache --agree-tos --no-eff-email --redirect --hsts --staple-ocsp
 Before accessing the Prestashop admin page:
 
 sudo rm -rf /var/www/prestashop/install
+
+semangat prestashop nya
